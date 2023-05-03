@@ -35,12 +35,13 @@ export class CellRendered {
       const textY = cellY + cellHeight / 2;
 
       if (rowState.removed) {
-        this.ctx.fillStyle = this.styles.removalColor;
+        this.ctx.fillStyle = this.styles.removalColor + rowState.opacity;
+      } else if (column.key === "price") {
+        this.ctx.fillStyle = this.styles.priceColor;
+      } else if (rowState.updated) {
+        this.ctx.fillStyle = this.styles.priceColor + rowState.opacity;
       } else {
-        this.ctx.fillStyle =
-          column.key === "price" || rowState.updated
-            ? this.styles.priceColor
-            : this.styles.color;
+        this.ctx.fillStyle = this.styles.color;
       }
 
       this.ctx.font = this.styles.font;

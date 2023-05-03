@@ -8,7 +8,9 @@ export enum RenderState {
 }
 
 export class RowState {
-  static readonly animationDelay = 300; //ms
+  static readonly ANIMATION_DURATION = 500; //ms
+  static readonly DEFAULT_FONT_OPACITY = 'ff'; // opacity 1
+
   private _animationTimestamp = 0;
   private _state = RenderState.Active;
 
@@ -40,6 +42,26 @@ export class RowState {
 
   get data() {
     return this._data;
+  }
+
+  get opacity() {
+    if (!this._animationTimestamp) {
+      return RowState.DEFAULT_FONT_OPACITY; // opcity 1
+    }
+
+    const duration = Date.now() - this._animationTimestamp;
+
+    if (duration > RowState.ANIMATION_DURATION) {
+      return RowState.DEFAULT_FONT_OPACITY;
+    }
+
+    const animationPercent = (100 * duration) / RowState.ANIMATION_DURATION;
+
+    if (animationPercent < 50) {
+      return Math.round((animationPercent * 255 * 2) / 100).toString(16).padStart(2, '0')
+    } else {
+      return Math.round(((100 - animationPercent) * 255 * 2) / 100).toString(16).padStart(2, '0')
+    }
   }
 
   updateData(data: Row) {
@@ -89,7 +111,7 @@ export class RowState {
   updateAnimationState() {
     switch (this._state) {
       case RenderState.Updated: {
-        if (Date.now() - this._animationTimestamp > RowState.animationDelay) {
+        if (Date.now() - this._animationTimestamp > RowState.ANIMATION_DURATION) {
           this._state = RenderState.Active;
           this._animationTimestamp = 0;
         }
@@ -97,7 +119,7 @@ export class RowState {
         return;
       }
       case RenderState.Removed: {
-        if (Date.now() - this._animationTimestamp > RowState.animationDelay) {
+        if (Date.now() - this._animationTimestamp > RowState.ANIMATION_DURATION) {
           this._state = RenderState.Inactive;
           this._animationTimestamp = 0;
         }
