@@ -26,7 +26,12 @@ export class RowRenderer {
     const width = this.getBarWidth(rowData.size, totalSize);
     const height = this.styles.rowHeight;
 
-    this.drawRow(x, y, width, height);
+    if (rowState.removed) {
+      this.clearRow(x, y);
+    } else {
+      this.drawRow(x, y, width, height);
+    }
+    
     this.cellRenderer.render(rowState, x + 5, y, this.config.width - 10, height);
   }
 

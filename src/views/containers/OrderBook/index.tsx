@@ -10,7 +10,7 @@ interface Props {
   symbol: string;
 }
 
-const THROTTLE_DELAY = 50;
+const THROTTLE_DELAY = 0;
 
 function OrderBookContainer({ symbol }: Props) {
   const { orderBookViewModel } = useViewModels();
