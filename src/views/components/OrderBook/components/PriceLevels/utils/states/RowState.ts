@@ -1,6 +1,6 @@
 import type { Row } from "../../../../types";
 
-const NUMBER_OF_ANIMATION_TICKS = 100;
+const NUMBER_OF_ANIMATION_TICKS = 20;
 
 export enum RenderState {
   Active,
@@ -59,6 +59,11 @@ export class RowState {
     ) {
       this._state = RenderState.Updated;
       this._animationTicks = NUMBER_OF_ANIMATION_TICKS;
+    }
+
+    if (this._state === RenderState.Removed) {
+      this._state = RenderState.Active;
+      this._animationTicks = 0;
     }
 
     this._data = data;

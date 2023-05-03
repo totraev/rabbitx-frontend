@@ -10,17 +10,19 @@ interface Props {
   symbol: string;
 }
 
+const THROTTLE_DELAY = 100;
+
 function OrderBookContainer({ symbol }: Props) {
   const { orderBookViewModel } = useViewModels();
   const orderBookRef = useRef<InstanceMethods>(null);
 
   useEffect(() => autorun(() => {
     orderBookRef.current?.updateAsks(orderBookViewModel.asks);
-  }), [orderBookViewModel]);
+  }, { delay: THROTTLE_DELAY }), [orderBookViewModel]);
 
   useEffect(() => autorun(() => {
     orderBookRef.current?.updateBids(orderBookViewModel.bids);
-  }), [orderBookViewModel]);
+  }, { delay: THROTTLE_DELAY }), [orderBookViewModel]);
 
   useEffect(() => {
     orderBookViewModel.init(symbol)

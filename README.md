@@ -54,7 +54,9 @@ Such approach helps keep every layer of current architecture as thin as possible
 
 The most complicated part of current project is `Price Levels` subcomponent of `Order Book`. It's just a wrapper around `Canvas Table` class which responsible for displaying data on canvas surface. Current implementation provides almost everything you need from order book on production (live update, removal animations or price level clicks). However there are some points to improve:
 
-- [ ] Optimise `Canvas Table`'s render function. Call `requestAnimationFrame` on demand only;
+- [ ] Optimise `Canvas Table`'s render function.
+- [ ] Optimise `Canvas Table`'s updateState function (throttle).
+- [ ] Optimise price level `update` and `removal` animations (they depends on app performance).
 - [ ] Canvas resize
 - [ ] Provide `Canvas Table`'s configs via general component's props;
 - [ ] Add application layer notifications and error handling
