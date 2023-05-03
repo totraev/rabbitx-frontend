@@ -56,7 +56,7 @@ The most complicated part of current project is `Price Levels` subcomponent of `
 
 - [ ] Optimise `Canvas Table`'s render function.
 - [ ] Optimise `Canvas Table`'s updateState function (throttle).
-- [ ] Optimise price level `update` and `removal` animations (they depends on app performance).
+- [x] Optimise price level `update` and `removal` animations (they depends on app performance).
 - [ ] Canvas resize
 - [ ] Provide `Canvas Table`'s configs via general component's props;
 - [ ] Add application layer notifications and error handling

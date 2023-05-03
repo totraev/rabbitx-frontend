@@ -1,7 +1,5 @@
 import type { Row } from "../../../../types";
 
-const NUMBER_OF_ANIMATION_TICKS = 20;
-
 export enum RenderState {
   Active,
   Updated,
@@ -10,7 +8,8 @@ export enum RenderState {
 }
 
 export class RowState {
-  private _animationTicks = 0;
+  static readonly animationDelay = 300; //ms
+  private _animationTimestamp = 0;
   private _state = RenderState.Active;
 
   constructor(private _data: Row | null = null) {}
@@ -24,11 +23,11 @@ export class RowState {
   }
 
   get updated() {
-    return this._state === RenderState.Updated && this._animationTicks > 0;
+    return this._state === RenderState.Updated && this._animationTimestamp > 0;
   }
 
   get removed() {
-    return this._state === RenderState.Removed && this._animationTicks > 0;
+    return this._state === RenderState.Removed && this._animationTimestamp > 0;
   }
 
   get empty() {
@@ -43,10 +42,6 @@ export class RowState {
     return this._data;
   }
 
-  get ticks() {
-    return this._animationTicks;
-  }
-
   updateData(data: Row) {
     if (!data) {
       return;
@@ -58,19 +53,19 @@ export class RowState {
       this._data?.size !== data.size
     ) {
       this._state = RenderState.Updated;
-      this._animationTicks = NUMBER_OF_ANIMATION_TICKS;
+      this._animationTimestamp = Date.now();
     }
 
     if (this._state === RenderState.Removed) {
       this._state = RenderState.Active;
-      this._animationTicks = 0;
+      this._animationTimestamp = 0;
     }
 
     this._data = data;
   }
 
   update(data: RowState) {
-    this._animationTicks = data.ticks;
+    this._animationTimestamp = data._animationTimestamp;
     this._data = data.data;
     this._state = data.renderState;
   }
@@ -79,7 +74,7 @@ export class RowState {
     this._data = null;
 
     this._state = RenderState.Active;
-    this._animationTicks = 0;
+    this._animationTimestamp = 0;
   }
 
   compare(row: Row, comparator: (a: Row | null, b: Row) => number): number {
@@ -88,27 +83,29 @@ export class RowState {
 
   markAsRemoved() {
     this._state = RenderState.Removed;
-    this._animationTicks = NUMBER_OF_ANIMATION_TICKS;
+    this._animationTimestamp = Date.now();
   }
 
   updateAnimationState() {
-    if (this._state === RenderState.Active) {
-      return;
-    }
+    switch (this._state) {
+      case RenderState.Updated: {
+        if (Date.now() - this._animationTimestamp > RowState.animationDelay) {
+          this._state = RenderState.Active;
+          this._animationTimestamp = 0;
+        }
 
-    if (this._state === RenderState.Updated) {
-      if (this._animationTicks > 0) {
-        this._animationTicks--;
-      } else {
-        this._state = RenderState.Active;
+        return;
       }
-    }
+      case RenderState.Removed: {
+        if (Date.now() - this._animationTimestamp > RowState.animationDelay) {
+          this._state = RenderState.Inactive;
+          this._animationTimestamp = 0;
+        }
 
-    if (this._state === RenderState.Removed) {
-      if (this._animationTicks > 0) {
-        this._animationTicks--;
-      } else {
-        this._state = RenderState.Inactive;
+        return;
+      }
+      default: {
+        return;
       }
     }
   }
