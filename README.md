@@ -1,8 +1,8 @@
-# Getting Started with Create React App
+# Orderbook
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project contains a POC of high performance and memory efficient React.js component which is base on HTML5 canvas and AVL tree.
 
-## Available Scripts
+## Quick Start
 
 In the project directory, you can run:
 
@@ -14,33 +14,50 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn test`
+## Description
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The application consists of multiple layers and implements classic `MVVM` architecture. The key part of this POC is stateless and encapsulated `Orderbook` component. It uses HTML canvas to render presorted price levels in both `Declarative` (React props) and `Imperative` (React instance methods) ways. Canvas helps us to avoid expensive DOM, Virtual DOM manipulations and doesn't require any additional `Event Listeners`. Other parts of application are responsible for state management and data transporting. The source code bases on `Reactive Programming` and `OOP` principles. In conclusion the whole application mainly consists of 4 layers:
 
-### `yarn build`
+- `Models` - The data storage layer
+- `Services` - Facade objects with encapsulated business logic
+- `ViewModels` - UI state of our application
+- `View` - React based components
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Models
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`Orderbook` model uses AVL trees and Maps under the hood to provide fast and memory efficient way of storing `price levels`. It gives us not only quick access to every item in a memory, but also provides presorted lists
+of `price levels`. Hash maps bring us even more quicker access to existing elements:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Update existing element - O(1)
+- Check - O(1)
+- Add new item - O(log<sub>2</sub>N)
+- Remove existing item - O(log<sub>2</sub>N)
 
-### `yarn eject`
+### Services
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Encapsulate business logic
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### ViewModels
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Store and deliver UI specific state of our application
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Views
 
-## Learn More
+Consist of two kinds of React components:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- `Pure Components` - declarative way to describe how to display data (received via props) in user's browser;
+- `Containers` - bridges between ViewModel layer and Pure Components;
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Such approach helps keep every layer of current architecture as thin as possible.
+
+## Challanges
+
+The most complicated part of current project is `Price Levels` subcomponent of `Order Book`. It's just a wrapper around `Canvas Table` class which responsible for displaying data on canvas surface. Current implementation provides almost everything you need from order book on production (live update, removal animations or price level clicks). However there are some points to improve:
+
+- [ ] Optimise `Canvas Table`'s render function. Call `requestAnimationFrame` on demand only;
+- [ ] Canvas resize
+- [ ] Provide `Canvas Table`'s configs via general component's props;
+- [ ] Add application layer notifications and error handling
+- [ ] Do some refactoring;
+
+Current implementation was inspired by [Coinbase](https://pro.coinbase.com/trade/BTC-USD).

@@ -18,18 +18,23 @@ export class MetaMaskSigner implements Signer {
     }
 
     this.onboarding.stopOnboarding();
-    this.provider = new ethers.providers.Web3Provider(window.ethereum);
 
     await window.ethereum.request({ method: 'eth_requestAccounts' });
+    
+    this.provider = new ethers.providers.Web3Provider(window.ethereum);
   }
 
   async getPublicKey(): Promise<string> {
+    if (!this.provider) return '';
+
     const accounts = await this.provider?.listAccounts();
 
     return accounts?.[0] ?? '';
   }
 
-  async signMessage(message: string): Promise<string> {    
+  async signMessage(message: string): Promise<string> {
+    if (!this.provider) return '';
+
     const signature = await this.provider?.getSigner().signMessage(message)
 
     return signature ?? '';

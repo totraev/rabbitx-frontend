@@ -14,6 +14,7 @@ type Props = {
   priceStep: number;
   minPriceStep: number;
   maxPriceStep: number;
+  numberOfRows: number;
   onIncreasePriceStep: () => void;
   onDecreasePriceStep: () => void;
   onRowClick?: (side: "ask" | "bid", priceLevel: PriceLevel | null) => void;
@@ -33,6 +34,7 @@ const OrderBook = forwardRef<InstanceMethods, Props>(
       priceStep,
       maxPriceStep,
       minPriceStep,
+      numberOfRows,
       onDecreasePriceStep,
       onIncreasePriceStep,
       onRowClick,
@@ -74,7 +76,7 @@ const OrderBook = forwardRef<InstanceMethods, Props>(
             ref={asksRef}
             priceLevels={asks}
             side="ask"
-            numberOfRows={25}
+            numberOfRows={numberOfRows}
             onRowClick={onRowClick}
           />
 
@@ -88,7 +90,7 @@ const OrderBook = forwardRef<InstanceMethods, Props>(
             ref={bidsRef}
             priceLevels={bids}
             side="bid"
-            numberOfRows={25}
+            numberOfRows={numberOfRows}
             onRowClick={onRowClick}
           />
         </div>

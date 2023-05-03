@@ -52,7 +52,6 @@ export class CanvasTable {
     }
   }
 
-
   draw = () => {
     const totalSize = this.state.totalSize;
 

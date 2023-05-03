@@ -28,6 +28,7 @@ function OrderBookContainer({ symbol }: Props) {
 
   return <OrderBook
     ref={orderBookRef}
+    numberOfRows={25}
     spread={orderBookViewModel.spread}
     priceStep={orderBookViewModel.priceStep}
     minPriceStep={orderBookViewModel.minPriceStep}
