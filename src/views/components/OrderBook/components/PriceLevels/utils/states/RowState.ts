@@ -70,7 +70,7 @@ export class RowState {
     }
 
     if (
-      this._state === RenderState.Active &&
+      (this._state === RenderState.Active || this._state === RenderState.Updated) &&
       !this.empty &&
       this._data?.size !== data.size
     ) {
