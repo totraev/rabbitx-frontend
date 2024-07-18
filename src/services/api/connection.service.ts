@@ -1,16 +1,19 @@
-import { Centrifuge, type Subscription, type ClientEvents } from 'centrifuge';
+import { Centrifuge, type Subscription, type ClientEvents } from "centrifuge";
 
-import { WS_URL } from '../../config';
+import { WS_URL } from "../../config";
 
 export class ConnectionService {
-  private client = new Centrifuge(WS_URL, { getToken: async () => this.getToket?.() ?? '' });
+  private client = new Centrifuge(WS_URL, {
+    getToken: async () => this.getToket?.() ?? "",
+    name: "js",
+  });
 
   getToket: (() => Promise<string>) | null = null;
 
   async connect(): Promise<void> {
-    this.client.connect()
+    this.client.connect();
 
-    return this.client.ready()
+    return this.client.ready();
   }
 
   disconnect(): void {
@@ -25,16 +28,16 @@ export class ConnectionService {
     this.client.removeSubscription(sub);
   }
 
-  on(name: 'state', handler: ClientEvents['state']): void {
+  on(name: "state", handler: ClientEvents["state"]): void {
     this.client.on(name, handler);
   }
 
-  removeListener(name: 'state', handler: ClientEvents['state']): void {
+  removeListener(name: "state", handler: ClientEvents["state"]): void {
     this.client.removeListener(name, handler);
   }
 
   removeAllListeners(): void {
-    this.client.removeAllListeners('state');
+    this.client.removeAllListeners("state");
   }
 }
 

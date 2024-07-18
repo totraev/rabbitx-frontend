@@ -1,42 +1,47 @@
 import { Subscription } from "centrifuge";
-import { createNanoEvents, type Unsubscribe } from 'nanoevents';
+import { createNanoEvents, type Unsubscribe } from "nanoevents";
 
 import { ConnectionService } from "./connection.service";
 
-type Channel = 'orderbook';
+type Channel = "orderbook";
 
 type EventMap<Data> = {
   data: (data: Data) => void;
   snapshot: (data: Data) => void;
-}
+};
 
 export class SubscriptionService<Data = any> {
   private subscription: Subscription | null = null;
   private sequence: number = 0;
-  private symbol = '';
+  private symbol = "";
 
   private ee = createNanoEvents<EventMap<Data>>();
   private listenersArr: Unsubscribe[] = [];
 
-  constructor(private connection: ConnectionService, private channelName: Channel) {}
+  constructor(
+    private connection: ConnectionService,
+    private channelName: Channel
+  ) {}
 
   subscribe(symbol: string) {
     this.unsubscribe();
-    this.symbol = `${this.channelName}:${symbol}`
+    this.symbol = symbol;
 
-    this.subscription = this.connection.createSubscribtion(this.symbol);
+    this.subscription = this.connection.createSubscribtion(
+      `${this.channelName}:${symbol}`
+    );
 
-    this.subscription.on('subscribed', (ctx) => {
+    this.subscription.on("subscribed", (ctx) => {
       this.sequence = ctx.data.sequence;
-      this.ee.emit('snapshot', ctx.data);
+      this.ee.emit("snapshot", ctx.data);
     });
 
-    this.subscription.on('publication', (ctx) => {
-      if (ctx.data.sequence - this.sequence === 1) {
-        this.ee.emit('data', ctx.data);
-        this.sequence = ctx.data.sequence;
-      } else {
+    this.subscription.on("publication", (ctx) => {
+      if (ctx.data.sequence - this.sequence > 1) {
         this.subscribe(this.symbol);
+      } else if (ctx.data.sequence - this.sequence === 1) {
+        this.ee.emit("data", ctx.data);
+        this.sequence = ctx.data.sequence;
       }
     });
 
@@ -59,6 +64,6 @@ export class SubscriptionService<Data = any> {
 
   destroy() {
     this.unsubscribe();
-    this.listenersArr.forEach(unsubscribe => unsubscribe());
+    this.listenersArr.forEach((unsubscribe) => unsubscribe());
   }
 }

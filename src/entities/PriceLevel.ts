@@ -1,7 +1,6 @@
-import { makeObservable, observable, computed, action } from 'mobx';
+import { makeObservable, observable, computed, action } from "mobx";
 
 export class PriceLevel {
-  readonly id: string;
   readonly price: number;
   size: number;
 
@@ -9,10 +8,9 @@ export class PriceLevel {
     makeObservable(this, {
       size: observable,
       total: computed,
-      update: action
+      update: action,
     });
 
-    this.id = price;
     this.price = parseFloat(price);
     this.size = parseFloat(size);
   }
@@ -22,6 +20,6 @@ export class PriceLevel {
   }
 
   update(size: string | number) {
-    this.size = typeof size === 'string' ? parseFloat(size) : size;
+    this.size = typeof size === "string" ? parseFloat(size) : size;
   }
 }

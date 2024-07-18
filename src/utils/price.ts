@@ -1,5 +1,9 @@
 import { IPriceLevel } from "../types/orderBook";
 
+export function formatPriceLevel(price: string) {
+  return parseFloat(price).toString();
+}
+
 export function roundPrice(price: number, epsilon: number): number {
   return Math.round(price / epsilon) * epsilon;
 }
@@ -7,7 +11,7 @@ export function roundPrice(price: number, epsilon: number): number {
 export function equalPrices(
   priceA: number,
   priceB: number,
-  epsilon: number,
+  epsilon: number
 ): boolean {
   return Math.abs(priceA - priceB) < epsilon;
 }
@@ -15,7 +19,7 @@ export function equalPrices(
 export function aggregatePriceLevels(
   priceLevels: IPriceLevel[],
   priceStep: number,
-  side: 'ask' | 'bid'
+  side: "ask" | "bid"
 ): IPriceLevel[] {
   const aggregateFn = (
     acc: IPriceLevel[],

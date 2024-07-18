@@ -2,6 +2,7 @@ import { createAtom, transaction } from "mobx";
 import AVLTree from "avl";
 
 import { PriceLevel } from "./PriceLevel";
+import { formatPriceLevel } from "../utils/price";
 
 export class OrderBook {
   private atom = createAtom("OrderBook");
@@ -30,18 +31,19 @@ export class OrderBook {
   add(price: string, size: string) {
     const priceLevel = new PriceLevel(price, size);
 
-    this.map.set(price, priceLevel);
+    this.map.set(formatPriceLevel(price), priceLevel);
     this.tree.insert(priceLevel.price, priceLevel);
 
     this.atom.reportChanged();
   }
 
   remove(price: string) {
-    const priceLevel = this.map.get(price);
+    const formattedPrice = formatPriceLevel(price);
+    const priceLevel = this.map.get(formattedPrice);
 
     if (priceLevel) {
       this.tree.remove(priceLevel.price);
-      this.map.delete(price);
+      this.map.delete(formattedPrice);
 
       this.atom.reportChanged();
     }
@@ -53,8 +55,10 @@ export class OrderBook {
       return;
     }
 
-    if (this.map.has(price)) {
-      this.map.get(price)?.update(size);
+    const formattedPrice = formatPriceLevel(price);
+
+    if (this.map.has(formattedPrice)) {
+      this.map.get(formattedPrice)?.update(size);
     } else {
       this.add(price, size);
     }
